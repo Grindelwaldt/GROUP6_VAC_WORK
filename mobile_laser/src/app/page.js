@@ -116,7 +116,10 @@ export default function Home() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    socket = io("https://group6-vac-work-backend.onrender.com");
+    // socket = io("https://group6-vac-work-backend.onrender.com");
+    socket = io("http://192.168.0.5:4000", {
+      transports: ['websocket']
+    });
 
     socket.on("connect", () => {
       console.log("Connected to server:", socket.id);
