@@ -120,7 +120,7 @@ export default function Home() {
     // socket = io("http://192.168.0.5:4000", {
     //   transports: ['websocket']
     // });
-    socket = io("http://192.168.0.5:4000");
+    socket = io("https://192.168.0.5:4000");
 
     socket.on("connect", () => {
       console.log("Connected to server:", socket.id);
