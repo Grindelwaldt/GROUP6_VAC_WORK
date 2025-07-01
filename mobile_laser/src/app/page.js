@@ -191,7 +191,8 @@ import {
   setupOrientationListener,
   lockOrientation,
   unlockOrientation
-} from './utils/screen';
+} from './utils/screen.js';
+import { weaponsData, getTeamColorClass, getHealthColorClass } from './utils/gameData';
 
 
 let socket;
@@ -332,13 +333,76 @@ export default function Home() {
       {/* YOUR EXISTING MODALS/OVERLAYS */}
       {showAboutModal && (
         <div className="about-modal">
-          {/* ... modal content ... */}
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+  <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md flex flex-col gap-6">
+    <h2 className="text-2xl font-bold text-gray-800 mb-4">Game Rules</h2>
+    <p className="text-gray-700">
+      Shooters can play solo against each other or in teams. Purchase weapons with points earned during gameplay.
+    </p>
+    <p className="text-gray-700">
+      Spectators can view live feeds of ongoing games and track player scores.
+    </p>
+    <ul className="list-disc pl-5 text-gray-700">
+      <li>Each player gets an assigned number to confirm identity</li>
+      <li>Select weapons before starting the game</li>
+      <li>Team mode requires team selection before playing</li>
+      <li>Manage your health and ammo during gameplay</li>
+    </ul>
+    <div className="flex justify-end mt-4">
+      <button
+        onClick={() => setShowAboutModal(false)}
+        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+</div>
         </div>
       )}
       
       {showPurchaseConfirmModal && (
         <div className="purchase-modal">
-          {/* ... modal content ... */}
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+  <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-sm flex flex-col gap-6">
+    <h2 className="text-2xl font-bold text-gray-800 mb-4">Confirm Purchase</h2>
+    {itemToPurchase && (
+      <>
+        <p className="text-lg text-gray-700">
+          Buy <span className="font-semibold">{itemToPurchase.name}</span> for 
+          <span className="font-bold text-green-600"> ${itemToPurchase.cost}</span>?
+        </p>
+        <p className="text-md text-gray-600">
+          Damage: {itemToPurchase.damage} | Ammo: {itemToPurchase.ammoCapacity === Infinity ? '∞' : itemToPurchase.ammoCapacity}
+        </p>
+      </>
+    )}
+    <p className="text-md text-gray-600">
+      Your points: <span className="font-bold text-blue-600">{playerPoints}</span>
+    </p>
+    {purchaseError && (
+      <p className="text-red-600 font-semibold text-center">{purchaseError}</p>
+    )}
+    <div className="flex justify-end gap-4 mt-4">
+      <button
+        onClick={cancelPurchase}
+        className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300"
+      >
+        Cancel
+      </button>
+      <button
+        onClick={confirmPurchase}
+        disabled={playerPoints < (itemToPurchase?.cost || 0)}
+        className={`py-2 px-4 rounded-lg font-bold shadow-md transition duration-300
+          ${playerPoints < (itemToPurchase?.cost || 0) 
+            ? 'bg-red-400 text-white cursor-not-allowed' 
+            : 'bg-green-500 hover:bg-green-600 text-white'}`}
+      >
+        Confirm Purchase
+      </button>
+    </div>
+  </div>
+</div>
         </div>
       )}
     </div>
