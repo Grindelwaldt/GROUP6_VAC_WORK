@@ -185,6 +185,14 @@
 
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
+import { 
+  isMobile as isMobileDevice, 
+  getOrientation, 
+  setupOrientationListener,
+  lockOrientation,
+  unlockOrientation
+} from './utils/screen';
+
 
 let socket;
 let my_username = "";
@@ -207,8 +215,12 @@ export default function Home() {
     const [loginUsernameInput, setLoginUsernameInput] = useState(''); // User's input for username
     const [loginMessage, setLoginMessage] = useState(''); // Feedback message for login attempts
     const [loggedInUsername, setLoggedInUsername] = useState(''); // Stores the successfully logged-in username
-    const [currentPage, setCurrentPage] = useState('login'); // Controls which part of the UI is shown
+    const [currentPage, setCurrentPage] = useState('lobby'); // Controls which part of the UI is shown
 
+    //scaling
+    const [orientation, setOrientation] = useState(getOrientation());
+    const [isMobile, setIsMobile] = useState(false);
+    const [isScaling, setIsScaling] = useState(false);
     // Lobby and Game related states
     const [showAboutModal, setShowAboutModal] = useState(false);
     const [gameMode, setGameMode] = useState(null); // 'singlePlayer' or 'team'
@@ -257,6 +269,82 @@ export default function Home() {
     const [assignedPlayerNumber, setAssignedPlayerNumber] = useState(null);
     const [numberInput, setNumberInput] = useState('');
     const [numberAssignmentMessage, setNumberAssignmentMessage] = useState('');
+    
+    //scaling
+      useEffect(() => {
+    const mobileCheck = isMobileDevice();
+    setIsMobile(mobileCheck);
+    
+    // Setup orientation listener
+    const cleanup = setupOrientationListener((newOrientation) => {
+      setOrientation(newOrientation);
+      
+      // Trigger scaling animation only on mobile landscape
+      if (mobileCheck && newOrientation === 'landscape') {
+        setIsScaling(true);
+        setTimeout(() => setIsScaling(false), 300); // Match animation duration
+      }
+    });
+
+    // Optional: Lock to portrait on mobile
+    if (mobileCheck) {
+      lockOrientation();
+    }
+
+    return () => {
+      cleanup();
+      if (mobileCheck) {
+        unlockOrientation();
+      }
+    };
+  }, []);
+
+  // Apply scaling in landscape mode
+  const containerStyle = {
+    width: '100%',
+    height: '100vh',
+    overflow: 'auto',
+    transform: isMobile && orientation === 'landscape' ? 'scale(0.8)' : 'scale(1)',
+    transformOrigin: 'top left',
+    position: 'relative',
+    transition: isScaling ? 'transform 0.3s ease-out' : 'none'
+  };
+
+   return (
+    <div 
+      style={containerStyle} 
+      className={isScaling ? 'scale-down-landscape' : ''}
+    >
+      {/* YOUR EXISTING PAGE CONTENT GOES HERE */}
+      {currentPage === 'login' && <LoginPage {...commonProps} />}
+      {currentPage === 'lobby' && <LobbyPage {...commonProps} />}
+      {currentPage === 'createJoinLobby' && <CreateJoinLobbyPage {...commonProps} />}
+      {currentPage === 'numberAssignment' && <NumberAssignmentPage {...commonProps} />}
+      {currentPage === 'teamSelectionLobby' && <TeamSelectionLobbyPage {...commonProps} />}
+      {currentPage === 'weaponSelection' && <WeaponSelectionPage {...commonProps} />}
+      {currentPage === 'spectatorLobby' && <SpectatorLobbyPage {...commonProps} />}
+      {currentPage === 'lobbySelectionForSpectator' && <LobbySelectionForSpectatorPage {...commonProps} />}
+      {currentPage === 'gameFeed' && (isPlayer ? 
+        <PlayerGameFeedPage {...commonProps} /> : 
+        <SpectatorGameFeedPage {...commonProps} />
+      )}
+      
+      {/* YOUR EXISTING MODALS/OVERLAYS */}
+      {showAboutModal && (
+        <div className="about-modal">
+          {/* ... modal content ... */}
+        </div>
+      )}
+      
+      {showPurchaseConfirmModal && (
+        <div className="purchase-modal">
+          {/* ... modal content ... */}
+        </div>
+      )}
+    </div>
+  );
+
+
     //socket handler
     useEffect(() => {
     // socket = io("https://group6-vac-work-backend.onrender.com");
@@ -396,6 +484,7 @@ export default function Home() {
             setAssignedPlayerNumber(newNumber);
         }
     }, [currentPage, assignedPlayerNumber]);
+
 
 
     // Centralized handlers for various actions
