@@ -184,7 +184,8 @@ AR.Detector = function (config) {
   this.contours = [];
   this.polys = [];
   this.candidates = [];
-  config.dictionaryName = config.dictionaryName || 'ARUCO_MIP_36h12';
+  config.dictionaryName = config.dictionaryName || 'ARUCO';
+  console.log(config.dictionaryName);
   this.dictionary = new AR.Dictionary(config.dictionaryName);
   this.dictionary.tau = config.maxHammingDistance != null ? config.maxHammingDistance : this.dictionary.tau;
 };
@@ -264,7 +265,7 @@ AR.Detector.prototype.detectMJPEGStream = function (chunk) {
 
 AR.Detector.prototype.detect = function (image) {
   CV.grayscale(image, this.grey);
-  CV.adaptiveThreshold(this.grey, this.thres, 2, 7);
+  CV.adaptiveThreshold(this.grey, this.thres, 2, 1);
 
   this.contours = CV.findContours(this.thres, this.binary);
   //Scale Fix: https://stackoverflow.com/questions/35936397/marker-detection-on-paper-sheet-using-javascript
