@@ -5,7 +5,7 @@ const TeamSelectionLobbyPage = ({
     hasSelectedTeam, selectedTeam, handleTeamSelect, handleLeaveLobby,
     currentTeamMembers, setCurrentPage,
     setWeaponSelectionTimer, setPurchasedWeapons, setEquippedWeapon,
-    setPlayerPoints, setPlayerHealth, weaponsData
+    setPlayerPoints, setPlayerHealth, weaponsData, handlePlayerReady
 }) => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex flex-col items-center justify-center p-4 font-inter">
@@ -41,13 +41,14 @@ const TeamSelectionLobbyPage = ({
                         </ul>
                         <button
                             onClick={() => {
-                                setWeaponSelectionTimer(60);
-                                const initialWeapons = [weaponsData[0], weaponsData[1]];
-                                setPurchasedWeapons(initialWeapons.map(w => ({ ...w })));
-                                setEquippedWeapon({ ...weaponsData[0] });
-                                setPlayerPoints(1000);
-                                setPlayerHealth(100);
-                                setCurrentPage('weaponSelection');
+                                // setWeaponSelectionTimer(60);
+                                // const initialWeapons = [weaponsData[0], weaponsData[1]];
+                                // setPurchasedWeapons(initialWeapons.map(w => ({ ...w })));
+                                // setEquippedWeapon({ ...weaponsData[0] });
+                                // setPlayerPoints(1000);
+                                // setPlayerHealth(100);
+                                // setCurrentPage('weaponSelection');
+                                handlePlayerReady();
                             }}
                             className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300"
                         >

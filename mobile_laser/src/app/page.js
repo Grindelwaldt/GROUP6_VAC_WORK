@@ -190,6 +190,7 @@ let socket;
 let my_username = "";
 let lobby_id = -1;
 let curr_team = -1;
+let curr_points = 0;
 
 import LoginPage from './LoginPage.js';
 import LobbyPage from './LobbyPage.js';
@@ -201,6 +202,10 @@ import SpectatorLobbyPage from './SpectatorLobbyPage.js';
 import LobbySelectionForSpectatorPage from './LobbySelectionForSpectatorPage.js';
 import PlayerGameFeedPage from './PlayerGameFeedPage.js';
 import SpectatorGameFeedPage from './SpectatorGameFeedPage.js';
+
+// Import utilities with .js extension
+import { weaponsData, getTeamColorClass } from '@/utils/gameData.js';
+import '@/utils/animations.css'; // Corrected import path
 
 
 export default function Home() {
@@ -228,7 +233,7 @@ export default function Home() {
     const [purchaseError, setPurchaseError] = useState('');
     const [playerHealth, setPlayerHealth] = useState(100);
     const maxPlayerHealth = 100;
-    const [isPlayer, setIsPlayer] = useState(false);
+    const [isPlayer, setIsPlayer] = useState(true);
     const [gameTimer, setGameTimer] = useState(0);
     const [isReloading, setIsReloading] = useState(false);
     const [reloadMessage, setReloadMessage] = useState('');
@@ -257,13 +262,14 @@ export default function Home() {
     const [assignedPlayerNumber, setAssignedPlayerNumber] = useState(null);
     const [numberInput, setNumberInput] = useState('');
     const [numberAssignmentMessage, setNumberAssignmentMessage] = useState('');
+    const [playerName, setPlayerName] = useState('');
     //socket handler
     useEffect(() => {
     // socket = io("https://group6-vac-work-backend.onrender.com");
     // socket = io("http://192.168.0.5:4000", {
     //   transports: ['websocket']
     // });
-    socket = io("http://192.168.0.5:4000");
+    socket = io("http://192.168.46.56:4000");
     // socket = io("http://192.168.46.69:4000", {  withCredentials: true, transports: ["websocket"], });
 
     socket.on("connect", () => {
@@ -310,16 +316,71 @@ export default function Home() {
       console.log(data)
       setHasSelectedTeam(true);
       let temp = []
+      let key = 1
       for (let id in data) {
         console.log(data[id]);
-        temp.push( { id: 1, name: id} )
+        temp.push( { id: key++, name: id} )
       }
 
       setCurrentTeamMembers(temp);
     });
 
+    socket.on("Teams-Updated", (data) => {
+      console.log("Teams-Updated " + lobby_id + " " + data[0])
+      if (lobby_id === data[0] && curr_team !== -1)
+      {
+        let temp = []
+        let key = 1
+        for (let id in data[curr_team]) {
+          console.log(data[curr_team][id]);
+          temp.push( { id: key++, name: id} )
+        }
+
+        setCurrentTeamMembers(temp);
+      }
+    });
+
+
+
     socket.on("Lobbies-List", (data) => {
       console.log(data);
+      setAvailableLobbies(data);
+    });
+
+     socket.on("Start-Game", (data) => {
+      if (data === lobby_id) {
+        setWeaponSelectionTimer(60);
+        const initialWeapons = [weaponsData[0], weaponsData[1]];
+        setPurchasedWeapons(initialWeapons.map(w => ({ ...w })));
+        setEquippedWeapon({ ...weaponsData[0] });
+        setPlayerPoints(curr_points);
+        setPlayerHealth(100);
+        setCurrentPage('weaponSelection');
+      }
+    });
+
+    socket.on("Take-Damage", (data) => {
+      if (lobby_id === data.id && my_username === data.player_id) {
+        takeDamage(data.damage);
+      }
+      
+    });
+
+    socket.on("Update-Score", (data) => {
+      if (lobby_id === data.id) {
+        setTeams([
+            { id: 't1', name: 'Team 1', score: data.team1_points},
+            { id: 't2', name: 'Team 2', score: data.team2_points},
+        ]);
+      }
+      
+    });
+
+    socket.on("Increase-Player-Points", (data) => {
+      console.log("Increase-Player-Points " + data)
+      curr_points = Math.max(curr_points + data,0);
+      console.log("Increase-Player-Points " + data)
+      setPlayerPoints(curr_points);  
     });
 
     return () => {
@@ -360,6 +421,8 @@ export default function Home() {
     // Effect to check for player death
     useEffect(() => {
         if (isPlayer && playerHealth <= 0 && !isPlayerDead) {
+            socket.emit("Player-Died",{id: lobby_id, player_id:my_username});
+            setEquippedWeapon({ ...weaponsData[1] });
             setIsPlayerDead(true);
             setReloadMessage("You Died!");
             setTimeout(() => setReloadMessage(''), 3000);
@@ -444,12 +507,19 @@ export default function Home() {
       let temp_message = {id: lobby_id, player_id: my_username};
       lobby_id = -1;
       socket.emit('Leave-Lobby',temp_message);
+      setShowCreateLobbySection(false);
+      setShowJoinLobbySection(false);
       setCurrentPage('createJoinLobby');
     }
 
     const handleLoadExistingLobbies = async () => {
       socket.emit('Get-Existing-Lobbies');
       setShowJoinLobbySection(true);
+    }
+
+    const handlePlayerReady = async() => {
+      socket.emit('Player-ready', {id: lobby_id, player_id: my_username});
+      // add stuff - gray out ready button and display waiting for other players
     }
 
     const handleSelectItem = (item) => {
@@ -472,8 +542,34 @@ export default function Home() {
         }
     };
 
+    const handleShootExternal = () => {
+      let shootSound = null
+      if (equippedWeapon.name === 'Combat Knife') {
+        shootSound = new Audio('/sounds/knife.wav');
+      } else {
+        shootSound = new Audio('/sounds/shoot.wav');
+      }
+      shootSound.play();
+    } ;
+
+    const handleReloadExternal = () => {
+       const reloadSound = new Audio('/sounds/reload.wav'); 
+        reloadSound.play();
+    } ;
+
+    const handleHealExternal = () => {
+       const healSound = new Audio('/sounds/heal.wav');
+            healSound.play();
+    } ;
+
+    const handleDamageExternal = () => {
+       const damageSound = new Audio('/sounds/damage.wav'); 
+            damageSound.play();
+    } ;
+
     const confirmPurchase = () => {
         if (itemToPurchase && playerPoints >= itemToPurchase.cost) {
+            curr_points -= itemToPurchase.cost;
             setPlayerPoints(prevPoints => prevPoints - itemToPurchase.cost);
             const newItem = { ...itemToPurchase };
             setPurchasedWeapons(prevItems => [...prevItems, newItem]);
@@ -499,6 +595,9 @@ export default function Home() {
         }
         if (equippedWeapon.ammoCapacity === Infinity) {
             setReloadMessage("Weapon Fired!");
+            let temp_number = 0;
+            if (my_username === "David") {temp_number = 2} else {temp_number = 1}
+            socket.emit("Fire-Gun", {id: lobby_id, player_id: my_username, number: temp_number, damage: equippedWeapon.damage})
             setTimeout(() => setReloadMessage(''), 1000);
             return;
         }
@@ -515,6 +614,9 @@ export default function Home() {
         });
 
         setReloadMessage("Weapon Fired!");
+        let temp_number = 0;
+        if (my_username === "David") {temp_number = 2} else {temp_number = 1}
+        socket.emit("Fire-Gun", {id: lobby_id, player_id: my_username, number: temp_number, damage: equippedWeapon.damage})
         setTimeout(() => setReloadMessage(''), 1000);
 
         if (equippedWeapon.currentAmmo - 1 <= 0) {
@@ -595,9 +697,10 @@ export default function Home() {
     };
 
     const confirmLeaveGame = async () => {
-        await saveGameProgress();
+        // await saveGameProgress();
+        // setShowLeaveGameConfirmModal(false);
         setShowLeaveGameConfirmModal(false);
-        setCurrentPage('lobby');
+        setCurrentPage('weaponSelection');
     };
 
     const cancelLeaveGame = () => {
@@ -611,6 +714,7 @@ export default function Home() {
             return;
         }
         generateDummyScores();
+        setPlayerName(my_username);
         setCurrentPage('gameFeed');
     };
 
@@ -630,8 +734,8 @@ export default function Home() {
             { id: 't2_p5', name: 'Player V', score: 500 },
         ];
         setTeams([
-            { id: 't1', name: 'Team 1', score: team1Players.reduce((sum, p) => sum + p.score, 0), players: team1Players },
-            { id: 't2', name: 'Team 2', score: team2Players.reduce((sum, p) => sum + p.score, 0), players: team2Players },
+            { id: 't1', name: 'Team 1', score: 0, players: team1Players },
+            { id: 't2', name: 'Team 2', score: 0, players: team2Players },
         ]);
         setPlayers([]);
     };
@@ -656,17 +760,20 @@ export default function Home() {
     };
 
     const joinLobby = async (lobbyIdToJoin) => {
-        const result = await firebaseJoinLobby(db, userId, usernameInput, lobbyIdToJoin, setLobbyMessage);
-        if (result.success) {
-            setCurrentLobbyId(lobbyIdToJoin);
-            setCurrentLobbyName(lobbyIdToJoin);
-            setGameMode('team');
-            setIsPlayer(true);
-            setSelectedTeam(result.selectedTeam);
-            setHasSelectedTeam(result.hasSelectedTeam);
-            setCurrentTeamMembers(result.currentTeamMembers);
-            setCurrentPage('numberAssignment');
-        }
+        // const result = await firebaseJoinLobby(db, userId, usernameInput, lobbyIdToJoin, setLobbyMessage);
+        // if (result.success) {
+        //     setCurrentLobbyId(lobbyIdToJoin);
+        //     setCurrentLobbyName(lobbyIdToJoin);
+        //     setGameMode('team');
+        //     setIsPlayer(true);
+        //     setSelectedTeam(result.selectedTeam);
+        //     setHasSelectedTeam(result.hasSelectedTeam);
+        //     setCurrentTeamMembers(result.currentTeamMembers);
+        //     setCurrentPage('numberAssignment');
+        // }
+        // add stuff - make it that client checks if player can join lobby
+        lobby_id = lobbyIdToJoin;
+        setCurrentPage('numberAssignment');
     };
 
     const handleSelectLobbyToSpectate = (lobbyId, lobbyName) => {
@@ -674,6 +781,7 @@ export default function Home() {
         setCurrentLobbyName(lobbyName);
         setIsPlayer(false);
         generateDummyScores();
+        setPlayerName(my_username);
         setCurrentPage('gameFeed');
         setShowLobbyDropdown(false);
     };
@@ -798,6 +906,7 @@ export default function Home() {
         handleTeamSelect,
         handleLeaveLobby,
         handleLoadExistingLobbies,
+        handlePlayerReady,
         handleSelectItem,
         confirmPurchase,
         cancelPurchase,
@@ -816,8 +925,14 @@ export default function Home() {
         joinLobby,
         handleSelectLobbyToSpectate,
         handleSubmitNumber,
-        // weaponsData,
-        // getTeamColorClass,
+        weaponsData,
+        getTeamColorClass,
+        playerName,
+        setPlayerName,
+        handleShootExternal,
+        handleDamageExternal,
+        handleHealExternal,
+        handleReloadExternal
     };
     // Login page specific states
 
