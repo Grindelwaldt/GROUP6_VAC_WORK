@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ArUco Marker Detection with Zoom Fix</title>
+  <link rel="stylesheet" href="index.css" />
+
+  <!-- Include dependencies -->
+  <script src="cv.js"></script>
+  <script src="posit1.js"></script>
+  <script src="posit2.js"></script>
+  <script src="svd.js"></script>
+  <script src="aruco.js"></script>
+  <script src="aruco_mip_36h12.js"></script>
+</head>
+<body>
+  <h1>ArUco Marker Detection</h1>
+
+  <video id="video" width="640" height="480" autoplay playsinline style="display:none;"></video>
+  <canvas id="canvas" width="640" height="480"></canvas>
+  <div id="output">No markers detected yet</div>
+
+  <script src="client.js"></script>
+</body>
+</html>
