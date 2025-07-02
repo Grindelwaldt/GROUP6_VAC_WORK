@@ -377,6 +377,23 @@ export default function Home() {
       handleHealPlayer(data);   
     });
 
+    socket.on("Lobby-Info", (data) => {
+       let temp_1 = []
+       let count = 1;
+       for (const id of data.team1_players){
+          temp_1.push({id: count++, name: id})
+       }
+       let temp_2 = []
+       count = 1;
+       for (const id of data.team2_players){
+          temp_2.push({id: count++, name: id})
+       }
+        setTeams([
+            { id: 't1', name: 'Team 1', score: data.team1_points, players: temp_1},
+            { id: 't2', name: 'Team 2', score: data.team2_points, players: temp_2},
+        ]);
+    });
+
     socket.on("Update-Score", (data) => {
       if (lobby_id === data.id) {
         setTeams([
@@ -699,7 +716,7 @@ export default function Home() {
     };
 
     const handleGetLobbyInfo = async () => {
-      console.log("Getting lobby info");
+      socket.emit("Get-Lobby-Info",lobby_id);
     }
 
     const saveGameProgress = async () => {
@@ -793,6 +810,7 @@ export default function Home() {
     };
 
     const handleSelectLobbyToSpectate = (lobbyId, lobbyName) => {
+        lobby_id = lobbyId;
         setCurrentLobbyId(lobbyId);
         setCurrentLobbyName(lobbyName);
         setIsPlayer(false);
