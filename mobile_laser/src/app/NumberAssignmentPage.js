@@ -103,8 +103,8 @@ const NumberAssignmentPage = ({
             }
             const debugCanvas = window._debugCanvas;
             const video = webcamRef.current.video; // or .video if using react-webcam
-            debugCanvas.width = video.videoWidth;
-            debugCanvas.height = video.videoHeight;
+            // debugCanvas.width = video.videoWidth;
+            // debugCanvas.height = video.videoHeight;
             const ctx = debugCanvas.getContext('2d');
             ctx.drawImage(video, 0, 0, debugCanvas.width, debugCanvas.height);
             const imageData = ctx.getImageData(0, 0, debugCanvas.width, debugCanvas.height);
