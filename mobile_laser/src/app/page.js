@@ -269,7 +269,7 @@ export default function Home() {
     // socket = io("http://192.168.0.5:4000", {
     //   transports: ['websocket']
     // });
-    socket = io("http://192.168.46.56:4000");
+    socket = io("https://group6-vac-work-backend.onrender.com");
     // socket = io("http://192.168.46.69:4000", {  withCredentials: true, transports: ["websocket"], });
 
     socket.on("connect", () => {
