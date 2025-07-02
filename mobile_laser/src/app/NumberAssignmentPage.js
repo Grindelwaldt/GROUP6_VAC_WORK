@@ -58,14 +58,14 @@ const NumberAssignmentPage = ({
     }
 
     // imageData must be a Canvas ImageData object
-    const getNumFromImage = (imageData) => {
+    const getNumFromImage = (width, height, imageData) => {
         console.log("Attempting to detect markers in the image data...");
         const detector = getDetector();
         if (!detector) {
             console.error('AR.Detector not loaded. Make sure aruco.js is loaded as a script.');
             return null;
         }
-        const markers = detector.detect(imageData);
+        const markers = detector.detectImage(imageData);
         if (markers.length > 0) {
             const numbers = [];
             console.log(markers);
@@ -95,23 +95,23 @@ const NumberAssignmentPage = ({
                 debugCanvas.style.right = '20px';
                 debugCanvas.style.border = '2px solid #4F46E5';
                 debugCanvas.style.zIndex = 9999;
-                debugCanvas.width = 640; // Set initial width
-                debugCanvas.height = 480; // Set initial height
+                // debugCanvas.width = 640; // Set initial width
+                // debugCanvas.height = 480; // Set initial height
                 document.body.appendChild(debugCanvas);
                 window._debugCanvas = debugCanvas;
                 debugCanvas.style.display = 'none';
             }
             const debugCanvas = window._debugCanvas;
             const video = webcamRef.current.video; // or .video if using react-webcam
-            // debugCanvas.width = video.videoWidth;
-            // debugCanvas.height = video.videoHeight;
+            debugCanvas.width = video.videoWidth;
+            debugCanvas.height = video.videoHeight;
             const ctx = debugCanvas.getContext('2d');
             ctx.drawImage(video, 0, 0, debugCanvas.width, debugCanvas.height);
             const imageData = ctx.getImageData(0, 0, debugCanvas.width, debugCanvas.height);
             // --- END: Display visible canvas for debugging ---
 
             // Now pass imageData to getNumFromImage
-            const markerIds = getNumFromImage(imageData);
+            const markerIds = getNumFromImage(debugCanvas.width, debugCanvas.height,imageData);
             if (markerIds && markerIds.length > 0) {
                 try {
                     // Call the backend with the first detected marker ID
