@@ -65,7 +65,7 @@ const NumberAssignmentPage = ({
             console.error('AR.Detector not loaded. Make sure aruco.js is loaded as a script.');
             return null;
         }
-        const markers = detector.detectImage(imageData);
+        const markers = detector.detectImage(width, height, imageData);
         if (markers.length > 0) {
             const numbers = [];
             console.log(markers);
