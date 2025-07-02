@@ -11,7 +11,7 @@ const SpectatorGameFeedPage = ({
     useEffect(() => {
         const interval = setInterval(() => {
             handleGetLobbyInfo();
-        }, 1000 / 30); // 1/30 seconds = ~33.33 ms
+        }, 1000 / 10); // 1/30 seconds = ~33.33 ms
 
         return () => clearInterval(interval); // cleanup on unmount
     }, []);
