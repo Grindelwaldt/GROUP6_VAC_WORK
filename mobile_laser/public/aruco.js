@@ -32,6 +32,7 @@ References:
 var AR = {};
 var CV = this.CV //|| require('./cv').CV;
 this.AR = AR;
+console.log("AR.js loaded");
 
 AR.DICTIONARIES = {
   ARUCO: {

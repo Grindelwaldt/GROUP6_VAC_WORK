@@ -30,6 +30,7 @@ References:
 
 var CV = CV || {};
 this.CV = CV;
+console.log("CV.js loaded");
 
 CV.Image = function(width, height, data){
   this.width = width || 0;
