@@ -1,8 +1,7 @@
 
 // src/pages/NumberAssignmentPage.js
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
-import { getNumFromImage } from './get_num_from_image';
 
 const NumberAssignmentPage = ({
     handleLeaveLobby,
@@ -14,6 +13,48 @@ const NumberAssignmentPage = ({
     const [scannedId, setScannedId] = useState('');
     const [isScanning, setIsScanning] = useState(false);
     const [scanError, setScanError] = useState('');
+
+    useEffect(() => {
+    if (!window.AR) {
+        const script = document.createElement('script');
+        script.src = '/aruco.js';
+        script.async = true;
+        document.body.appendChild(script);
+        return () => {
+        document.body.removeChild(script);
+        };
+    }
+    }, []);
+
+    let detector = null;
+    function getDetector() {
+        if (!detector && window.AR) {
+            detector = new window.AR.Detector();
+        }
+        return detector;
+    }
+
+    // imageData must be a Canvas ImageData object
+    const getNumFromImage = (imageData) => {
+        console.log("Attempting to detect markers in the image data...");
+        const detector = getDetector();
+        if (!detector) {
+            console.error('AR.Detector not loaded. Make sure aruco.js is loaded as a script.');
+            return null;
+        }
+        const markers = detector.detect(imageData);
+        if (markers.length > 0) {
+            const numbers = [];
+            for (let marker of markers) {
+                numbers.push(marker.id);
+            }
+            console.log("Markers detected");
+            return numbers; // Return the detected marker IDs as an array
+        } else {
+            console.log("No markers detected in the image data.");
+            return null; // No markers detected
+        }
+    }
 
     // Function to capture image and send to backend for ID extraction
     const handleScanBox = async () => {
