@@ -68,6 +68,7 @@ const NumberAssignmentPage = ({
         const markers = detector.detect(imageData);
         if (markers.length > 0) {
             const numbers = [];
+            console.log(markers);
             for (let marker of markers) {
                 numbers.push(marker.id);
             }
