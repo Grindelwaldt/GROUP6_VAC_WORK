@@ -148,6 +148,7 @@ const NumberAssignmentPage = ({
                         />
                         {/* Visual scan box overlay */}
                         <div className="absolute inset-0 border-4 border-blue-500 rounded-lg pointer-events-none"></div>
+                    </div>
                 <div className="w-full flex flex-col items-center gap-4">
                     <div className="relative w-64 h-48 bg-black rounded-lg overflow-hidden flex items-center justify-center">
                         <Webcam
@@ -197,7 +198,6 @@ const NumberAssignmentPage = ({
                 )}
 
                 <button
-                    onClick={handleLeaveLobby}
                     onClick={handleLeaveLobby}
                     className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 w-full mt-4"
                 >
