@@ -18,7 +18,7 @@ const SpectatorGameFeedPage = ({
                 )}
                 <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-xl font-bold flex-grow">
                     {watchingPlayerName ? (
-                        <p>Watching: <span className="text-blue-600">{watchingPlayerName}'s</span> Feed</p>
+                        <p>Watching: <span className="text-blue-600">{watchingPlayerName}&apos;s</span> Feed</p>
                     ) : (
                         <p>Select a player from the sidebar to view their live feed.</p>
                     )}
