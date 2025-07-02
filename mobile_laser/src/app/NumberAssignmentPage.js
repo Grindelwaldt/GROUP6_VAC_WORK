@@ -83,15 +83,28 @@ const NumberAssignmentPage = ({
     const handleScanBox = async () => {
         setIsScanning(true);
         setScanError('');
+
         if (webcamRef.current) {
-            // Assume webcamRef.current is a <video> or <Webcam> component
+            // --- BEGIN: Display visible canvas for debugging ---
+            if (!window._debugCanvas) {
+                const debugCanvas = document.createElement('canvas');
+                debugCanvas.id = 'debug-canvas';
+                debugCanvas.style.position = 'fixed';
+                debugCanvas.style.bottom = '20px';
+                debugCanvas.style.right = '20px';
+                debugCanvas.style.border = '2px solid #4F46E5';
+                debugCanvas.style.zIndex = 9999;
+                document.body.appendChild(debugCanvas);
+                window._debugCanvas = debugCanvas;
+            }
+            const debugCanvas = window._debugCanvas;
             const video = webcamRef.current.video; // or .video if using react-webcam
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            debugCanvas.width = video.videoWidth;
+            debugCanvas.height = video.videoHeight;
+            const ctx = debugCanvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, debugCanvas.width, debugCanvas.height);
+            const imageData = ctx.getImageData(0, 0, debugCanvas.width, debugCanvas.height);
+            // --- END: Display visible canvas for debugging ---
 
             // Now pass imageData to getNumFromImage
             const markerIds = getNumFromImage(imageData);
