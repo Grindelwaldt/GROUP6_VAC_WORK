@@ -53,10 +53,19 @@ const TeamSelectionLobbyPage = ({
                         >
                             Ready!
                         </button>
+                        
+                        {showWaitingMessage && (
+                            <div className="mt-4 p-3 bg-blue-500 text-white text-lg font-semibold rounded-lg shadow-md animate-fade-in">
+                                Just waiting for other team.
+                            </div>
+                        )}
+                        
                         <button
                             onClick={() => {
                                 // Reset team selection state
-                                handleTeamSelect(null); // Pass null to clear selected team
+                                handleTeamSelect(null);
+                                setIsReadyClicked(false); 
+                                setShowWaitingMessage(false); 
                             }}
                             className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300 w-full mt-4"
                         >

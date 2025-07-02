@@ -1,6 +1,13 @@
 // src/pages/PlayerGameFeedPage.js
-import React from 'react';
-import { getHealthColorClass, getTeamColorClass } from '../utils/gameData.js'; // Corrected import path and added getTeamColorClass
+import React, { useEffect, useRef } from 'react';
+import { getHealthColorClass, getTeamColorClass } from '../utils/gameData.js';
+
+//sound effects
+const shootSound = new Audio('/sounds/shoot.wav');
+const damageSound = new Audio('/sounds/damage.wav');
+const healSound = new Audio('/sounds/heal.wav');
+const reloadSound = new Audio('/sounds/reload.wav');
+const knifeSound = new Audio('/sounds/knife.wav'); 
 
 const PlayerGameFeedPage = ({
     selectedTeam, teams, gameTimer, playerHealth, maxPlayerHealth,
@@ -10,10 +17,43 @@ const PlayerGameFeedPage = ({
     healMessageText, showGreenGlow, purchasedWeapons, handleSelectItem,
     handleLeaveGame, showLeaveGameConfirmModal, savingProgress,
     confirmLeaveGame, cancelLeaveGame, takeDamage, handleUsePowerUp,
-    handleReloadWeapon
+    handleReloadWeapon, playerPoints, playerName
 }) => {
-    // getTeamColorClass is now imported from gameData.js
     const teamColors = getTeamColorClass(selectedTeam);
+
+    // Effect to play sound when showDamageMessage changes to true
+    useEffect(() => {
+        if (showDamageMessage) {
+            damageSound.play(); // Removed .current as Audio objects don't need it when directly imported
+        }
+    }, [showDamageMessage]);
+
+    // Effect to play sound when showHealMessage changes to true
+    useEffect(() => {
+        if (showHealMessage) {
+            healSound.play(); // Removed .current
+        }
+    }, [showHealMessage]);
+
+    // Enhanced handleWeaponAction to play shoot or knife sound
+    const handleShoot = () => {
+        if (!isPlayerDead && equippedWeapon && (equippedWeapon.ammoCapacity === Infinity || equippedWeapon.currentAmmo > 0) && !isReloading) {
+            if (equippedWeapon.name === 'Combat Knife') { 
+                knifeSound.play();
+            } else {
+                shootSound.play();
+            }
+            handleWeaponAction(); 
+        }
+    };
+
+    // Enhanced handleReloadWeapon to play reload sound
+    const handleReload = () => {
+        if (!isPlayerDead && equippedWeapon && equippedWeapon.ammoCapacity !== Infinity && !isReloading && (equippedWeapon && equippedWeapon.currentAmmo !== equippedWeapon.ammoCapacity)) {
+            reloadSound.play(); // Removed .current
+            handleReloadWeapon(); // Call the original reload handler passed as prop
+        }
+    };
 
     return (
         <div className={`min-h-screen w-full bg-gradient-to-br from-gray-900 to-black flex flex-col ${showRedGlow ? 'screen-glow-red' : ''} ${showGreenGlow ? 'screen-glow-green' : ''}`}>
@@ -25,6 +65,9 @@ const PlayerGameFeedPage = ({
                                 {team.name}: <span className="text-yellow-300">{team.score}</span>
                             </span>
                         ))}
+                        <span className="text-xl font-bold">
+                           {playerName}: <span className="text-blue-400">{playerPoints}</span>
+                        </span>
                     </div>
                 </div>
                 <div className="absolute left-1/2 transform -translate-x-1/2 bg-gray-700 text-white font-bold text-2xl px-4 py-2 rounded-full shadow-lg z-50">
@@ -36,9 +79,9 @@ const PlayerGameFeedPage = ({
                             className={`${getHealthColorClass(playerHealth, maxPlayerHealth)} h-full flex items-center justify-center transition-all duration-300`}
                             style={{ width: `${(playerHealth / maxPlayerHealth) * 100}%` }}
                         >
-                            <span className="text-white text-base font-bold">
+                            {/* <span className="text-white text-base font-bold">
                                 Health: {playerHealth}/{maxPlayerHealth}
-                            </span>
+                            </span> */}
                         </div>
                     </div>
                     <div className="flex items-center gap-2 bg-gray-700 text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">
@@ -72,8 +115,8 @@ const PlayerGameFeedPage = ({
                 </div>
 
                 <button
-                    onClick={handleWeaponAction}
-                    disabled={isPlayerDead || !equippedWeapon || (equippedWeapon.ammoCapacity !== Infinity && equippedWeapon.currentAmmo <= 0) || isReloading}
+                    onClick={handleShoot}
+                    disabled={!equippedWeapon || (equippedWeapon.ammoCapacity !== Infinity && equippedWeapon.currentAmmo <= 0) || isReloading}
                     className={`fixed right-4 top-1/2 transform -translate-y-1/2 rounded-full w-20 h-20 flex items-center justify-center shadow-xl transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-4
                         ${isPlayerDead || !equippedWeapon || (equippedWeapon.ammoCapacity !== Infinity && equippedWeapon.currentAmmo <= 0) || isReloading ? 'bg-gray-500 text-gray-300 cursor-not-allowed' : `${teamColors.bg} ${teamColors.hoverBg} text-white ${teamColors.focusRing}`} z-50`}
                 >
@@ -82,7 +125,7 @@ const PlayerGameFeedPage = ({
                     </span>
                 </button>
 
-                <div className="fixed left-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-4 z-50">
+                {/* <div className="fixed left-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-4 z-50">
                     <button
                         onClick={() => takeDamage(15)}
                         disabled={isPlayerDead}
@@ -99,10 +142,10 @@ const PlayerGameFeedPage = ({
                     >
                         Use Powerup (+20 HP)
                     </button>
-                </div>
+                </div> */}
 
                 <button
-                    onClick={handleReloadWeapon}
+                    onClick={handleReload}
                     disabled={isPlayerDead || !equippedWeapon || equippedWeapon.ammoCapacity === Infinity || isReloading || (equippedWeapon && equippedWeapon.currentAmmo === equippedWeapon.ammoCapacity)}
                     className={`fixed left-4 top-1/2 transform translate-y-24 rounded-full w-20 h-20 flex items-center justify-center shadow-xl transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-4
                         ${isPlayerDead || !equippedWeapon || equippedWeapon.ammoCapacity === Infinity || isReloading || (equippedWeapon && equippedWeapon.currentAmmo === equippedWeapon.ammoCapacity) ? 'bg-gray-500 text-gray-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-300'} z-50`}

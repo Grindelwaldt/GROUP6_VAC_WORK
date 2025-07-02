@@ -191,8 +191,8 @@ import {
   setupOrientationListener,
   lockOrientation,
   unlockOrientation
-} from './utils/screen.js';
-import { weaponsData, getTeamColorClass, getHealthColorClass } from './utils/gameData';
+} from '@/utils/screen.js';
+import { weaponsData, getTeamColorClass, getHealthColorClass } from '@/utils/gameData.js';
 
 
 let socket;
@@ -242,7 +242,7 @@ export default function Home() {
     const [playerHealth, setPlayerHealth] = useState(100);
     const maxPlayerHealth = 100;
     const [isPlayer, setIsPlayer] = useState(false);
-    const [gameTimer, setGameTimer] = useState(0);
+    const [gameTimer, setGameTimer] = useState(300);
     const [isReloading, setIsReloading] = useState(false);
     const [reloadMessage, setReloadMessage] = useState('');
     const [needsReload, setNeedsReload] = useState(false);
@@ -270,7 +270,19 @@ export default function Home() {
     const [assignedPlayerNumber, setAssignedPlayerNumber] = useState(null);
     const [numberInput, setNumberInput] = useState('');
     const [numberAssignmentMessage, setNumberAssignmentMessage] = useState('');
+    const [playerName, setPLayerName] = useState('');
     
+    //timer
+    useEffect(() => {
+        let gameTimerInterval;
+        if (currentPage === 'gameFeed' && isPlayer) {
+            gameTimerInterval = setInterval(() => {
+                setGameTimer(prevTime => prevTime - 1); 
+            }, 1000);
+        }
+        return () => clearInterval(gameTimerInterval);
+    }, [currentPage, isPlayer]);
+
     //scaling
       useEffect(() => {
     const mobileCheck = isMobileDevice();
@@ -316,7 +328,7 @@ export default function Home() {
       style={containerStyle} 
       className={isScaling ? 'scale-down-landscape' : ''}
     >
-      {/* YOUR EXISTING PAGE CONTENT GOES HERE */}
+      {/* YOUR EXISTING PAGE CONTENT GOES HERE
       {currentPage === 'login' && <LoginPage {...commonProps} />}
       {currentPage === 'lobby' && <LobbyPage {...commonProps} />}
       {currentPage === 'createJoinLobby' && <CreateJoinLobbyPage {...commonProps} />}
@@ -328,7 +340,7 @@ export default function Home() {
       {currentPage === 'gameFeed' && (isPlayer ? 
         <PlayerGameFeedPage {...commonProps} /> : 
         <SpectatorGameFeedPage {...commonProps} />
-      )}
+      )} */}
       
       {/* YOUR EXISTING MODALS/OVERLAYS */}
       {showAboutModal && (
@@ -765,6 +777,7 @@ export default function Home() {
         }
         generateDummyScores();
         setCurrentPage('gameFeed');
+        setPlayerName(my_username);
     };
 
     const generateDummyScores = () => {
@@ -828,6 +841,7 @@ export default function Home() {
         setIsPlayer(false);
         generateDummyScores();
         setCurrentPage('gameFeed');
+        setPlayerName(my_username);
         setShowLobbyDropdown(false);
     };
 
@@ -969,6 +983,8 @@ export default function Home() {
         joinLobby,
         handleSelectLobbyToSpectate,
         handleSubmitNumber,
+        setPlayerName,
+        playerName,
         // weaponsData,
         // getTeamColorClass,
     };
