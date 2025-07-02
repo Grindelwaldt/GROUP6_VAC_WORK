@@ -933,7 +933,9 @@ export default function Home() {
         handleShootExternal,
         handleDamageExternal,
         handleHealExternal,
-        handleReloadExternal
+        handleReloadExternal,
+        showWaiting, 
+        setShowWaiting
     };
     // Login page specific states
 
