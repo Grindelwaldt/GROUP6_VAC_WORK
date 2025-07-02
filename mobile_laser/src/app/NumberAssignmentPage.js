@@ -95,6 +95,8 @@ const NumberAssignmentPage = ({
                 debugCanvas.style.right = '20px';
                 debugCanvas.style.border = '2px solid #4F46E5';
                 debugCanvas.style.zIndex = 9999;
+                debugCanvas.width = 640; // Set initial width
+                debugCanvas.height = 480; // Set initial height
                 document.body.appendChild(debugCanvas);
                 window._debugCanvas = debugCanvas;
             }
