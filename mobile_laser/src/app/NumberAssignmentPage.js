@@ -99,6 +99,7 @@ const NumberAssignmentPage = ({
                 debugCanvas.height = 480; // Set initial height
                 document.body.appendChild(debugCanvas);
                 window._debugCanvas = debugCanvas;
+                debugCanvas.style.display = 'none';
             }
             const debugCanvas = window._debugCanvas;
             const video = webcamRef.current.video; // or .video if using react-webcam
