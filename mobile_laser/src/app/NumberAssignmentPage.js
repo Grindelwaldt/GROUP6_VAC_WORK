@@ -92,12 +92,14 @@ const NumberAssignmentPage = ({
     const [isScanning, setIsScanning] = useState(false);
     const [scanError, setScanError] = useState('');
 
+
     // Function to capture image and send to backend for ID extraction
     const handleScanBox = async () => {
         setIsScanning(true);
         setScanError('');
         if (webcamRef.current) {
             const imageSrc = webcamRef.current.getScreenshot();
+            console.log(imageSrc);
             if (imageSrc) {
                 try {
                     // Call the backend with the imageSrc (base64 string)
