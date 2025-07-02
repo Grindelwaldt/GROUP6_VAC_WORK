@@ -122,7 +122,7 @@ const NumberAssignmentPage = ({
                     console.log('Scanned ID:', markerIds);
                     setScannedId(markerIds[0]);
                     setNumberInput(markerIds[0]);
-                    handleSubmitNumber();
+                    handleSubmitNumber(markerIds[0]);
                 } catch (err) {
                     setScanError('Failed to scan ID. Please try again.');
                 }

@@ -783,7 +783,7 @@ export default function Home() {
         setShowLobbyDropdown(false);
     };
 
-    const handleSubmitNumber = async () => {
+    const handleSubmitNumber = async (number) => {
         // const success = await updatePlayerAssignedNumber(db, userId, currentLobbyId, assignedPlayerNumber, numberInput, setNumberAssignmentMessage);
         // if (success) {
         //     setTimeout(() => {
@@ -792,7 +792,7 @@ export default function Home() {
         //         setAssignedPlayerNumber(null);
         //     }, 1500);
         // }
-        let temp_message = {id: lobby_id, player_id: my_username, player_number: numberInput};
+        let temp_message = {id: lobby_id, player_id: my_username, player_number: number};
         socket.emit("Request-To-Join-Lobby",temp_message)
     };
 
