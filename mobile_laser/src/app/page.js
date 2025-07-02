@@ -380,6 +380,7 @@ export default function Home() {
     socket.on("Lobby-Info", (data) => {
        let temp_1 = []
        let count = 1;
+       console.log(data.team1_players)
        for (const id of data.team1_players){
           temp_1.push({id: count++, name: id})
        }
