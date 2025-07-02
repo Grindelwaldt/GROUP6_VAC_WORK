@@ -255,6 +255,7 @@ export default function Home() {
     const [currentLobbyId, setCurrentLobbyId] = useState(null);
     const [currentLobbyName, setCurrentLobbyName] = useState(null);
     const [availableLobbies, setAvailableLobbies] = useState([]);
+    const [availableSpectatorLobbies, setAvailableSpectatorLobbies] = useState([]);
     const [showLobbyDropdown, setShowLobbyDropdown] = useState(false);
     const [showCreateLobbySection, setShowCreateLobbySection] = useState(false);
     const [showJoinLobbySection, setShowJoinLobbySection] = useState(false);
@@ -346,6 +347,11 @@ export default function Home() {
     socket.on("Lobbies-List", (data) => {
       console.log(data);
       setAvailableLobbies(data);
+    });
+
+    socket.on("Spectator-Lobbies-List", (data) => {
+      console.log(data);
+      setAvailableSpectatorLobbies(data);
     });
 
      socket.on("Start-Game", (data) => {
@@ -520,6 +526,11 @@ export default function Home() {
     const handleLoadExistingLobbies = async () => {
       socket.emit('Get-Existing-Lobbies');
       setShowJoinLobbySection(true);
+    }
+
+    const handleLoadSpectatorExistingLobbies = async () => {
+      socket.emit('Get-Existing-Spectator-Lobbies');
+      setCurrentPage('lobbySelectionForSpectator')
     }
 
     const handlePlayerReady = async() => {
@@ -890,6 +901,8 @@ export default function Home() {
         setCurrentLobbyName,
         availableLobbies,
         setAvailableLobbies,
+        availableSpectatorLobbies,
+        setAvailableSpectatorLobbies,
         showLobbyDropdown,
         setShowLobbyDropdown,
         showCreateLobbySection,
@@ -907,6 +920,7 @@ export default function Home() {
         handleTeamSelect,
         handleLeaveLobby,
         handleLoadExistingLobbies,
+        handleLoadSpectatorExistingLobbies,
         handlePlayerReady,
         handleSelectItem,
         confirmPurchase,
