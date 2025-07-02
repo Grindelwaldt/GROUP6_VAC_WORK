@@ -220,6 +220,7 @@ export default function Home() {
     const [selectedTeam, setSelectedTeam] = useState(null); // 'Team 1' or 'Team 2'
     const [players, setPlayers] = useState([]); // Array of { id, name, score, team? }
     const [teams, setTeams] = useState([]);
+    const [spectTeams, setSpectTeams] = useState([]);
     const [showDeathMessage, setShowDeathMessage] = useState(false);
     const [killedPlayerName, setKilledPlayerName] = useState('');
     const [hasSelectedTeam, setHasSelectedTeam] = useState(false);
@@ -391,7 +392,7 @@ export default function Home() {
         temp_2.push({id: count++, name: player.id})
        });
        console.log(data.team1_points + " " + data.team2_points)
-        setTeams([
+        spectTeams([
             { id: 't1', name: 'Team 1', score: data.team1_points, players: temp_1},
             { id: 't2', name: 'Team 2', score: data.team2_points, players: temp_2},
         ]);
@@ -858,6 +859,8 @@ export default function Home() {
         setPlayers,
         teams,
         setTeams,
+        spectTeams,
+        setSpectTeams,
         showDeathMessage,
         killedPlayerName,
         setKilledPlayerName,

@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 const SpectatorGameFeedPage = ({
     currentLobbyName, watchingPlayerName, showDeathMessage, killedPlayerName,
     showLobbyDropdown, setShowLobbyDropdown, availableLobbies,
-    handleSelectLobbyToSpectate, setCurrentPage, gameMode, teams, players,
+    handleSelectLobbyToSpectate, setCurrentPage, gameMode, spectTeams, players,
     handleWatchPlayer, watchingPlayerId, handleGetLobbyInfo
 }) => {
     useEffect(() => {
@@ -106,11 +106,11 @@ const SpectatorGameFeedPage = ({
                 ) : (
                     <div>
                         <h3 className="text-xl font-semibold text-gray-700 mb-2">Team Scores</h3>
-                        {teams.length === 0 ? (
+                        {spectTeams.length === 0 ? (
                             <p className="text-gray-500">No teams to display.</p>
                         ) : (
                             <div className="space-y-4">
-                                {teams.map(team => (
+                                {spectTeams.map(team => (
                                     <div key={team.id} className="bg-blue-50 p-3 rounded-lg shadow-sm">
                                         <div className="flex justify-between items-center mb-2">
                                             <span className="font-bold text-blue-800 text-lg">{team.name}</span>
