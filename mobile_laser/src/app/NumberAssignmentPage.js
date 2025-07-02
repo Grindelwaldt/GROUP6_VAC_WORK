@@ -98,9 +98,9 @@ const NumberAssignmentPage = ({
             if (markerIds && markerIds.length > 0) {
                 try {
                     // Call the backend with the first detected marker ID
-                    const id = await handleScanId(markerIds[0]);
-                    console.log('Scanned ID:', id);
-                    setScannedId(id);
+                    // const id = await handleScanId(markerIds[0]);
+                    console.log('Scanned ID:', markerIds);
+                    setScannedId(markerIds[0]);
                 } catch (err) {
                     setScanError('Failed to scan ID. Please try again.');
                 }
