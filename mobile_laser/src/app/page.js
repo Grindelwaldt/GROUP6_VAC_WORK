@@ -392,7 +392,7 @@ export default function Home() {
         temp_2.push({id: count++, name: player.id})
        });
        console.log(data.team1_points + " " + data.team2_points)
-        spectTeams([
+        setSpectTeams([
             { id: 't1', name: 'Team 1', score: data.team1_points, players: temp_1},
             { id: 't2', name: 'Team 2', score: data.team2_points, players: temp_2},
         ]);
