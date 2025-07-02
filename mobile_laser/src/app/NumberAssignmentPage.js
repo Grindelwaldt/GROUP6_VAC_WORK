@@ -15,13 +15,36 @@ const NumberAssignmentPage = ({
     const [scanError, setScanError] = useState('');
 
     useEffect(() => {
-    if (!window.AR) {
-        const script = document.createElement('script');
-        script.src = '/aruco.js';
-        script.async = true;
-        document.body.appendChild(script);
+    // Load cv.js first, then aruco.js
+    if (!window.CV) {
+        const cvScript = document.createElement('script');
+        cvScript.src = '/cv.js';
+        cvScript.async = true;
+        document.body.appendChild(cvScript);
+        cvScript.onload = () => {
+            if (!window.AR) {
+                const arucoScript = document.createElement('script');
+                arucoScript.src = '/aruco.js';
+                arucoScript.async = true;
+                document.body.appendChild(arucoScript);
+                // Clean up both scripts on unmount
+                return () => {
+                    document.body.removeChild(arucoScript);
+                    document.body.removeChild(cvScript);
+                };
+            }
+        };
+        // Clean up cvScript if aruco.js never loads
         return () => {
-        document.body.removeChild(script);
+            document.body.removeChild(cvScript);
+        };
+    } else if (!window.AR) {
+        const arucoScript = document.createElement('script');
+        arucoScript.src = '/aruco.js';
+        arucoScript.async = true;
+        document.body.appendChild(arucoScript);
+        return () => {
+            document.body.removeChild(arucoScript);
         };
     }
     }, []);
