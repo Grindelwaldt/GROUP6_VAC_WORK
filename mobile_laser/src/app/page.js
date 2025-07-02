@@ -367,6 +367,10 @@ export default function Home() {
       
     });
 
+    socket.on("Heal-Player", (data) => {
+      handleUsePowerUp(data);   
+    });
+
     socket.on("Update-Score", (data) => {
       if (lobby_id === data.id) {
         setTeams([
