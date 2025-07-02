@@ -230,16 +230,6 @@ const PlayerGameFeedPage = ({
     // const healSound = useRef(new Audio(healSfx));
 
     // Effect to play sound when showDamageMessage changes to true
-    const webcamRef = useRef(null);
-
-    const captureImage = () => {
-        if (webcamRef.current) {
-            const imageSrc = webcamRef.current.getScreenshot();
-            // Do something with imageSrc (base64 string)
-            console.log(imageSrc);
-        }
-    };
-
     useEffect(() => {
         if (showDamageMessage) {
             handleDamageExternal();
@@ -255,7 +245,6 @@ const PlayerGameFeedPage = ({
 
     // Enhanced handleWeaponAction to play shoot sound
     const handleShoot = () => {
-        captureImage();
         if (!isPlayerDead && equippedWeapon && (equippedWeapon.ammoCapacity === Infinity || equippedWeapon.currentAmmo > 0) && !isReloading) {
             handleShootExternal();
             handleWeaponAction(); 
@@ -272,36 +261,70 @@ const PlayerGameFeedPage = ({
 
     return (
         <div className={`min-h-screen w-full bg-gradient-to-br from-gray-900 to-black flex flex-col ${showRedGlow ? 'screen-glow-red' : ''} ${showGreenGlow ? 'screen-glow-green' : ''}`}>
-            <div className="w-full bg-gray-800 text-white p-4 flex justify-between items-center shadow-lg">
-                <div className="flex items-center gap-4">
-                    <div className="flex gap-4">
-                        {teams.map(team => (
-                            <span key={team.id} className="text-xl font-bold">
-                                {team.name}: <span className="text-yellow-300">{team.score}</span>
+            <div className="w-full bg-gray-800 text-white p-3 flex justify-between items-center shadow-lg" style={{ fontSize: '0.8rem', padding: '0.8rem 0.8rem 0.8rem 0.8rem', minHeight: '48px' }}>
+                {/* Fixed team names, team scores, player name and score in top left corner */}
+                <div className="fixed top-2 left-2 flex flex-col items-start gap-1 z-50" style={{ pointerEvents: 'auto', minWidth: '7.5rem' }}>
+                    {teams.map(team => {
+                        const color = getTeamColorClass(team.name)?.bgColor || '#e5e7eb'; // fallback to gray-200
+                        return (
+                            <span
+                                key={team.id}
+                                className="text-lg font-extrabold rounded-md shadow tracking-tight"
+                                style={{
+                                    fontSize: '1.05rem',
+                                    fontFamily: 'Montserrat, Arial, sans-serif',
+                                    textAlign: 'left',
+                                    background: color,
+                                    color: '#222',
+                                    padding: '0.22rem 0.7rem',
+                                    minWidth: '8.5rem',
+                                    display: 'inline-block',
+                                    letterSpacing: '-0.01em',
+                                    textShadow: '0 1px 2px rgba(255,255,255,0.12)',
+                                }}
+                            >
+                                <span style={{ fontWeight: 800, fontSize: '1.08em', letterSpacing: '-0.01em' }}>{team.name}</span>: <span style={{ color: '#0a3a7c', fontWeight: 700 }}>{team.score}</span>
                             </span>
-                        ))}
-                        <span className="text-xl font-bold">
-                         {playerName}: <span className="text-blue-400">{playerPoints}</span>
-                        </span>
-                    </div>
+                        );
+                    })}
+                    <span
+                        className="text-lg font-extrabold rounded-md shadow tracking-tight"
+                        style={{
+                            fontSize: '1.05rem',
+                            fontFamily: 'Montserrat, Arial, sans-serif',
+                            textAlign: 'left',
+                            background: teamColors.bgColor || '#e5e7eb',
+                            color: '#222',
+                            padding: '0.22rem 0.7rem',
+                            minWidth: '8.5rem',
+                            display: 'inline-block',
+                            letterSpacing: '-0.01em',
+                            textShadow: '0 1px 2px rgba(255,255,255,0.12)',
+                        }}
+                    >
+                        <span style={{ fontWeight: 800, fontSize: '1.08em', letterSpacing: '-0.01em' }}>{playerName}</span>: <span style={{ color: '#0a3a7c', fontWeight: 700 }}>{playerPoints}</span>
+                    </span>
                 </div>
-                <div className="absolute left-1/2 transform -translate-x-1/2 bg-gray-700 text-white font-bold text-2xl px-4 py-2 rounded-full shadow-lg z-50">
+                <div className="fixed top-2 left-1/2 -translate-x-1/2 bg-gray-700 text-white font-extrabold rounded-full shadow-lg z-50 flex items-center justify-center"
+                    style={{ fontSize: '0.714rem', padding: '0.252rem 0.728rem', letterSpacing: '0.03em', fontFamily: 'Verdana, Geneva, Arial, Helvetica, sans-serif', minWidth: '4.83rem' }}>
                     Game Time: {Math.floor(gameTimer / 60).toString().padStart(2, '0')}:{(gameTimer % 60).toString().padStart(2, '0')}
                 </div>
-                <div className="flex flex-col items-end gap-1">
-                    <div className="bg-gray-700 rounded-full h-8 w-48 overflow-hidden shadow-lg">
+                {/* Fixed health and ammo bars, top right corner, always visible above camera feed */}
+                {/* Fixed health and ammo bars, top right corner, always visible above camera feed */}
+                <div className="fixed top-2 right-2 flex flex-col items-end gap-1 z-50" style={{ pointerEvents: 'auto' }}>
+                    <div className="bg-gray-700 rounded-full overflow-hidden shadow-lg flex items-center justify-end"
+                        style={{ height: '1.4rem', width: '8.4rem', minHeight: '1.4rem', minWidth: '8.4rem', maxHeight: '1.4rem', maxWidth: '8.4rem', transform: 'scale(0.7)', transformOrigin: 'top right' }}>
                         <div
                             className={`${getHealthColorClass(playerHealth, maxPlayerHealth)} h-full flex items-center justify-center transition-all duration-300`}
                             style={{ width: `${(playerHealth / maxPlayerHealth) * 100}%` }}
                         >
-                            {/* <span className="text-white text-base font-bold">
-                                Health: {playerHealth}/{maxPlayerHealth}
-                            </span> */}
+                            {/* No text in health bar */}
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 bg-gray-700 text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">
-                        <span>Ammo: {equippedWeapon ? `${equippedWeapon.currentAmmo}/${equippedWeapon.ammoCapacity === Infinity ? '∞' : equippedWeapon.ammoCapacity}` : 'N/A'}</span>
-                        <div className="bg-gray-500 rounded-full h-4 w-20 overflow-hidden">
+                    <div className="flex items-center gap-2 bg-gray-700 text-white rounded-full font-bold shadow-md justify-end"
+                        style={{ padding: '0.35rem 0.7rem', fontSize: '0.7rem', fontFamily: 'Montserrat, Arial, sans-serif', transform: 'scale(0.7)', transformOrigin: 'top right', minHeight: '1.4rem', minWidth: '8.4rem', maxHeight: '1.4rem', maxWidth: '8.4rem' }}>
+                        <span>{equippedWeapon ? (equippedWeapon.currentAmmo === Infinity ? '∞' : equippedWeapon.currentAmmo) : 'N/A'}</span>
+                        <div className="bg-gray-500 rounded-full overflow-hidden" style={{ height: '0.7rem', width: '3.5rem' }}>
                             <div
                                 className="bg-blue-400 h-full transition-all duration-300"
                                 style={{ width: `${equippedWeapon ? (equippedWeapon.currentAmmo / equippedWeapon.ammoCapacity) * 100 : 0}%` }}
@@ -311,30 +334,53 @@ const PlayerGameFeedPage = ({
                 </div>
             </div>
 
-            <div className="flex-grow flex flex-col items-center justify-center p-4 relative">
-                <p className="text-lg text-gray-600 text-center mb-6">
-                    <span className={`font-bold ${teamColors.text}`}>
-                        You are in Team Mode: {selectedTeam || 'Not Selected'}.
-                    </span>
-                </p>
-                <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-xl font-bold flex-grow relative overflow-hidden">
+            <div className="flex-grow flex flex-col items-center justify-center p-0 m-0 relative overflow-hidden w-screen h-screen max-w-none max-h-none" style={{ minHeight: '100dvh', minWidth: '100vw', height: '100dvh', width: '100vw', overflow: 'hidden', position: 'relative', touchAction: 'none' }}>
+                {/* Team display removed as requested */}
+                <div className="absolute inset-0 w-full h-full flex items-center justify-center z-0" style={{ minHeight: '100dvh', minWidth: '100vw', height: '100dvh', width: '100vw', overflow: 'hidden', pointerEvents: 'none' }}>
                     {/* Camera preview using react-webcam */}
                     <Webcam
                         audio={false}
-                        ref={webcamRef}
                         screenshotFormat="image/jpeg"
-                        className="rounded-lg w-full h-full object-cover"
+                        className="w-full h-full object-cover"
                         videoConstraints={{ facingMode: "environment" }}
+                        style={{ minHeight: '100dvh', minWidth: '100vw', height: '100dvh', width: '100vw', objectFit: 'cover', zIndex: 0, position: 'absolute', top: 0, left: 0 }}
                     />
+                    {/* Gun focus point (crosshair) in the center */}
+                    <div
+                        className="pointer-events-none"
+                        style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            zIndex: 10,
+                            width: '72px', // 50% bigger than 48px
+                            height: '72px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        {/* Crosshair SVG */}
+                        <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="36" cy="36" r="12" stroke="#888" strokeWidth="3" opacity="0.7" />
+                            <line x1="36" y1="6" x2="36" y2="24" stroke="#888" strokeWidth="3" opacity="0.7" />
+                            <line x1="36" y1="48" x2="36" y2="66" stroke="#888" strokeWidth="3" opacity="0.7" />
+                            <line x1="6" y1="36" x2="24" y2="36" stroke="#888" strokeWidth="3" opacity="0.7" />
+                            <line x1="48" y1="36" x2="66" y2="36" stroke="#888" strokeWidth="3" opacity="0.7" />
+                            <circle cx="36" cy="36" r="4" fill="#888" opacity="0.9" />
+                        </svg>
+                    </div>
                 </div>
 
                 <button
                     onClick={handleShoot}
                     disabled={!equippedWeapon || (equippedWeapon.ammoCapacity !== Infinity && equippedWeapon.currentAmmo <= 0) || isReloading}
-                    className={`fixed right-4 top-1/2 transform -translate-y-1/2 rounded-full w-20 h-20 flex items-center justify-center shadow-xl transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-4
+                    className={`fixed right-2 top-1/2 -translate-y-1/2 rounded-full w-20 h-20 flex items-center justify-center shadow-xl transition duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-4
                         ${isPlayerDead || !equippedWeapon || (equippedWeapon.ammoCapacity !== Infinity && equippedWeapon.currentAmmo <= 0) || isReloading ? 'bg-gray-500 text-gray-300 cursor-not-allowed' : `${teamColors.bg} ${teamColors.hoverBg} text-white ${teamColors.focusRing}`} z-50`}
+                    style={{ fontSize: '1rem', fontFamily: 'Montserrat, Arial, sans-serif', right: 8, left: 'auto' }}
                 >
-                    <span className="font-bold text-xl">
+                    <span className="font-bold">
                         FIRE!
                     </span>
                 </button>
@@ -361,10 +407,11 @@ const PlayerGameFeedPage = ({
                 <button
                     onClick={handleReload}
                     disabled={isPlayerDead || !equippedWeapon || equippedWeapon.ammoCapacity === Infinity || isReloading || (equippedWeapon && equippedWeapon.currentAmmo === equippedWeapon.ammoCapacity)}
-                    className={`fixed left-4 top-1/2 transform translate-y-24 rounded-full w-20 h-20 flex items-center justify-center shadow-xl transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-4
+                    className={`fixed left-2 top-1/2 -translate-y-1/2 rounded-full w-20 h-20 flex items-center justify-center shadow-xl transition duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-4
                         ${isPlayerDead || !equippedWeapon || equippedWeapon.ammoCapacity === Infinity || isReloading || (equippedWeapon && equippedWeapon.currentAmmo === equippedWeapon.ammoCapacity) ? 'bg-gray-500 text-gray-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-300'} z-50`}
+                    style={{ fontSize: '1rem', fontFamily: 'Montserrat, Arial, sans-serif', left: 8, right: 'auto' }}
                 >
-                    <span className="font-bold text-xl">
+                    <span className="font-bold">
                         {isReloading ? '...' : 'RELOAD'}
                     </span>
                 </button>
@@ -393,7 +440,7 @@ const PlayerGameFeedPage = ({
                     </div>
                 )}
 
-                <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex items-end gap-4 z-50">
+                <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex items-end gap-3 z-50">
                     {purchasedWeapons
                         .filter(Boolean)
                         .map(weapon => (
@@ -401,12 +448,13 @@ const PlayerGameFeedPage = ({
                                 key={weapon.name}
                                 onClick={() => handleSelectItem(weapon)}
                                 disabled={isPlayerDead}
-                                className={`py-2 px-4 rounded-lg shadow-md transition duration-300 font-semibold text-white
+                                className={`py-1 px-2 rounded-lg shadow-md transition duration-300 font-semibold text-white
                                     ${isPlayerDead ? 'bg-gray-500 cursor-not-allowed' :
                                         equippedWeapon && equippedWeapon.name === weapon.name
-                                        ? `bg-black border-4 ${teamColors.bg}`
+                                        ? `bg-black border-2 ${teamColors.bg}`
                                         : 'bg-gray-600 hover:bg-gray-700'
                                     }`}
+                                style={{ fontSize: '0.8rem', fontFamily: 'Montserrat, Arial, sans-serif' }}
                             >
                                 {weapon.name}
                             </button>
@@ -415,8 +463,9 @@ const PlayerGameFeedPage = ({
 
                 <button
                     onClick={handleLeaveGame}
-                    className="fixed bottom-4 right-4 bg-red-600 hover:bg-red-700 text-white font-bold text-lg rounded-full w-16 h-16 flex items-center justify-center shadow-lg transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-300 z-50"
+                    className="fixed bottom-4 right-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-300 z-50"
                     title="Leave Game"
+                    style={{ fontSize: '1rem', fontFamily: 'Montserrat, Arial, sans-serif' }}
                 >
                     X
                 </button>
