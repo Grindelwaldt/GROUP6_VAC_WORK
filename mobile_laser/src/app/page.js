@@ -368,7 +368,7 @@ export default function Home() {
     });
 
     socket.on("Heal-Player", (data) => {
-      handleUsePowerUp(data);   
+      handleHealPlayer(data);   
     });
 
     socket.on("Update-Score", (data) => {
@@ -641,7 +641,7 @@ export default function Home() {
         }, 1000);
     };
 
-    const handleUsePowerUp = (amount) => {
+    const handleHealPlayer = (amount) => {
         setPlayerHealth(prevHealth => Math.min(maxPlayerHealth, prevHealth + amount));
         setHealMessageText(`+${amount} HP`);
         setShowHealMessage(true);
@@ -913,7 +913,7 @@ export default function Home() {
         cancelPurchase,
         handleWeaponAction,
         takeDamage,
-        handleUsePowerUp,
+        handleHealPlayer,
         handleReloadWeapon,
         saveGameProgress,
         handleLeaveGame,

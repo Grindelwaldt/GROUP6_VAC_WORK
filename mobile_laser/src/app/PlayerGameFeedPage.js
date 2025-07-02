@@ -217,7 +217,7 @@ const PlayerGameFeedPage = ({
     showDamageMessage, damageMessageText, showRedGlow, showHealMessage,
     healMessageText, showGreenGlow, purchasedWeapons, handleSelectItem,
     handleLeaveGame, showLeaveGameConfirmModal, savingProgress,
-    confirmLeaveGame, cancelLeaveGame, takeDamage, handleUsePowerUp,
+    confirmLeaveGame, cancelLeaveGame, takeDamage, handleHealPlayer,
     handleReloadWeapon, playerPoints, playerName, handleShootExternal,
     handleDamageExternal, handleHealExternal, handleReloadExternal,
 }) => {
