@@ -380,12 +380,14 @@ export default function Home() {
     socket.on("Lobby-Info", (data) => {
        let temp_1 = []
        let count = 1;
-       data.team1_players.forEach(player => {
+       let playersArray = Object.values(data.team1_players);
+       playersArray.forEach(player => {
         temp_1.push({id: count++, name: player.id})
        });
        let temp_2 = []
        count = 1;
-       data.team2_players.forEach(player => {
+       playersArray = Object.values(data.team2_players);
+       playersArray.forEach(player => {
         temp_2.push({id: count++, name: player.id})
        });
         setTeams([
