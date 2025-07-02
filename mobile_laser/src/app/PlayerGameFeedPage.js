@@ -230,6 +230,16 @@ const PlayerGameFeedPage = ({
     // const healSound = useRef(new Audio(healSfx));
 
     // Effect to play sound when showDamageMessage changes to true
+    const webcamRef = useRef(null);
+
+    const captureImage = () => {
+        if (webcamRef.current) {
+            const imageSrc = webcamRef.current.getScreenshot();
+            // Do something with imageSrc (base64 string)
+            console.log(imageSrc);
+        }
+    };
+
     useEffect(() => {
         if (showDamageMessage) {
             handleDamageExternal();
@@ -245,6 +255,7 @@ const PlayerGameFeedPage = ({
 
     // Enhanced handleWeaponAction to play shoot sound
     const handleShoot = () => {
+        captureImage();
         if (!isPlayerDead && equippedWeapon && (equippedWeapon.ammoCapacity === Infinity || equippedWeapon.currentAmmo > 0) && !isReloading) {
             handleShootExternal();
             handleWeaponAction(); 
@@ -310,6 +321,7 @@ const PlayerGameFeedPage = ({
                     {/* Camera preview using react-webcam */}
                     <Webcam
                         audio={false}
+                        ref={webcamRef}
                         screenshotFormat="image/jpeg"
                         className="rounded-lg w-full h-full object-cover"
                         videoConstraints={{ facingMode: "environment" }}
