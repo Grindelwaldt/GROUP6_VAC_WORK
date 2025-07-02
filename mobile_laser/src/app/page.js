@@ -588,7 +588,7 @@ export default function Home() {
         setPurchaseError('');
     };
 
-    const handleWeaponAction = () => {
+    const handleWeaponAction = (temp_number) => {
         if (!equippedWeapon) {
             setReloadMessage("No weapon equipped!");
             setTimeout(() => setReloadMessage(''), 2000);
@@ -596,8 +596,6 @@ export default function Home() {
         }
         if (equippedWeapon.ammoCapacity === Infinity) {
             setReloadMessage("Weapon Fired!");
-            let temp_number = 0;
-            if (my_username === "David") {temp_number = 2} else {temp_number = 1}
             socket.emit("Fire-Gun", {id: lobby_id, player_id: my_username, number: temp_number, damage: equippedWeapon.damage})
             setTimeout(() => setReloadMessage(''), 1000);
             return;
@@ -615,8 +613,6 @@ export default function Home() {
         });
 
         setReloadMessage("Weapon Fired!");
-        let temp_number = 0;
-        if (my_username === "David") {temp_number = 2} else {temp_number = 1}
         socket.emit("Fire-Gun", {id: lobby_id, player_id: my_username, number: temp_number, damage: equippedWeapon.damage})
         setTimeout(() => setReloadMessage(''), 1000);
 

@@ -222,6 +222,73 @@ const PlayerGameFeedPage = ({
     handleDamageExternal, handleHealExternal, handleReloadExternal,
 }) => {
     const teamColors = getTeamColorClass(selectedTeam);
+    const webcamRef = useRef(null);
+
+    useEffect(() => {
+        // Load cv.js first, then aruco.js
+        if (!window.CV) {
+            const cvScript = document.createElement('script');
+            cvScript.src = '/cv.js';
+            cvScript.async = true;
+            document.body.appendChild(cvScript);
+            cvScript.onload = () => {
+                if (!window.AR) {
+                    const arucoScript = document.createElement('script');
+                    arucoScript.src = '/aruco.js';
+                    arucoScript.async = true;
+                    document.body.appendChild(arucoScript);
+                    // Clean up both scripts on unmount
+                    return () => {
+                        document.body.removeChild(arucoScript);
+                        document.body.removeChild(cvScript);
+                    };
+                }
+            };
+            // Clean up cvScript if aruco.js never loads
+            return () => {
+                document.body.removeChild(cvScript);
+            };
+        } else if (!window.AR) {
+            const arucoScript = document.createElement('script');
+            arucoScript.src = '/aruco.js';
+            arucoScript.async = true;
+            document.body.appendChild(arucoScript);
+            return () => {
+                document.body.removeChild(arucoScript);
+            };
+        }
+        }, []);
+
+        let detector = null;
+    function getDetector() {
+        if (!detector && window.AR) {
+            detector = new AR.Detector();
+        }
+        return detector;
+    }
+
+    // imageData must be a Canvas ImageData object
+    const getNumFromImage = (width, height, imageData) => {
+        console.log("Attempting to detect markers in the image data...");
+        const detector = getDetector();
+        if (!detector) {
+            console.error('AR.Detector not loaded. Make sure aruco.js is loaded as a script.');
+            return null;
+        }
+        const markers = detector.detect(imageData);
+        if (markers.length > 0) {
+            const numbers = [];
+            console.log(markers);
+            for (let marker of markers) {
+                numbers.push(marker.id);
+            }
+            console.log("Markers detected");
+            return numbers; // Return the detected marker IDs as an array
+        } else {
+            console.log("No markers detected in the image data.");
+            return null; // No markers detected
+        }
+    }
 
     //sound effects
     // const shootSound = useRef(new Audio(shootSfx));
@@ -247,7 +314,51 @@ const PlayerGameFeedPage = ({
     const handleShoot = () => {
         if (!isPlayerDead && equippedWeapon && (equippedWeapon.ammoCapacity === Infinity || equippedWeapon.currentAmmo > 0) && !isReloading) {
             handleShootExternal();
-            handleWeaponAction(); 
+            /// start
+            if (webcamRef.current) {
+            // --- BEGIN: Display visible canvas for debugging ---
+            if (!window._debugCanvas) {
+                const debugCanvas = document.createElement('canvas');
+                debugCanvas.id = 'debug-canvas';
+                debugCanvas.style.position = 'fixed';
+                debugCanvas.style.bottom = '20px';
+                debugCanvas.style.right = '20px';
+                debugCanvas.style.border = '2px solid #4F46E5';
+                debugCanvas.style.zIndex = 9999;
+                // debugCanvas.width = 640; // Set initial width
+                // debugCanvas.height = 480; // Set initial height
+                document.body.appendChild(debugCanvas);
+                window._debugCanvas = debugCanvas;
+                debugCanvas.style.display = 'none';
+            }
+            const debugCanvas = window._debugCanvas;
+            const video = webcamRef.current.video; // or .video if using react-webcam
+            debugCanvas.width = video.videoWidth;
+            debugCanvas.height = video.videoHeight;
+            const ctx = debugCanvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, debugCanvas.width, debugCanvas.height);
+            const imageData = ctx.getImageData(0, 0, debugCanvas.width, debugCanvas.height);
+            // --- END: Display visible canvas for debugging ---
+
+            // Now pass imageData to getNumFromImage
+            const markerIds = getNumFromImage(debugCanvas.width, debugCanvas.height,imageData);
+            if (markerIds && markerIds.length > 0) {
+                try {
+                    // Call the backend with the first detected marker ID
+                    // const id = await handleScanId(markerIds[0]);
+                    console.log('Scanned ID:', markerIds);
+                    for ( const id of markerIds)
+                    {
+                        handleWeaponAction(id); 
+                    }
+                } catch (err) {
+                    setScanError('Failed to scan ID. Please try again.');
+                }
+            } else {
+                setScanError('No marker detected. Please try again.');
+            }
+        }
+            
         }
     };
 
@@ -340,6 +451,7 @@ const PlayerGameFeedPage = ({
                     {/* Camera preview using react-webcam */}
                     <Webcam
                         audio={false}
+                        ref={webcamRef}
                         screenshotFormat="image/jpeg"
                         className="w-full h-full object-cover"
                         videoConstraints={{ facingMode: "environment" }}
