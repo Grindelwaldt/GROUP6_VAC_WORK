@@ -263,6 +263,7 @@ export default function Home() {
     const [numberInput, setNumberInput] = useState('');
     const [numberAssignmentMessage, setNumberAssignmentMessage] = useState('');
     const [playerName, setPlayerName] = useState('');
+    const [showWaiting, setShowWaiting] = useState(false);
     //socket handler
     useEffect(() => {
     // socket = io("https://group6-vac-work-backend.onrender.com");
