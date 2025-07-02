@@ -1,12 +1,21 @@
 // src/pages/SpectatorGameFeedPage.js
-import React from 'react';
+import React, { useEffect } from 'react';
+
 
 const SpectatorGameFeedPage = ({
     currentLobbyName, watchingPlayerName, showDeathMessage, killedPlayerName,
     showLobbyDropdown, setShowLobbyDropdown, availableLobbies,
     handleSelectLobbyToSpectate, setCurrentPage, gameMode, teams, players,
-    handleWatchPlayer, watchingPlayerId
+    handleWatchPlayer, watchingPlayerId, handleGetLobbyInfo
 }) => {
+    useEffect(() => {
+        const interval = setInterval(() => {
+            handleGetLobbyInfo();
+        }, 1000 / 30); // 1/30 seconds = ~33.33 ms
+
+        return () => clearInterval(interval); // cleanup on unmount
+    }, []);
+
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 to-black flex">
             <div className="flex-grow flex flex-col items-center justify-center p-4 relative">
@@ -117,7 +126,7 @@ const SpectatorGameFeedPage = ({
                                                     onClick={() => handleWatchPlayer(player.id, player.name)}
                                                 >
                                                     <span>{player.name}</span>
-                                                    <span>{player.score}</span>
+                                                    {/* <span>{player.score}</span> */}
                                                 </li>
                                             ))}
                                         </ul>

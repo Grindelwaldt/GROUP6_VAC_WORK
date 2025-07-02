@@ -698,6 +698,10 @@ export default function Home() {
         }, 1500);
     };
 
+    const handleGetLobbyInfo = async () => {
+      console.log("Getting lobby info");
+    }
+
     const saveGameProgress = async () => {
         setSavingProgress(true);
         await firebaseSaveGameProgress(db, userId, playerPoints, playerHealth, equippedWeapon, purchasedWeapons);
@@ -949,7 +953,8 @@ export default function Home() {
         handleHealExternal,
         handleReloadExternal,
         showWaiting, 
-        setShowWaiting
+        setShowWaiting,
+        handleGetLobbyInfo
     };
     // Login page specific states
 
