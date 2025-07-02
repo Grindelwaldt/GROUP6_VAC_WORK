@@ -204,6 +204,7 @@
 
 // src/pages/PlayerGameFeedPage.js
 import React, { useEffect, useRef } from 'react';
+import Webcam from 'react-webcam';
 import { getHealthColorClass, getTeamColorClass } from '../utils/gameData.js';
 
 //sound effects
@@ -305,16 +306,14 @@ const PlayerGameFeedPage = ({
                         You are in Team Mode: {selectedTeam || 'Not Selected'}.
                     </span>
                 </p>
-                <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-xl font-bold flex-grow relative">
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-                        <div className="relative w-8 h-8 flex items-center justify-center">
-                            <div className="absolute w-full h-0.5 bg-gray-400"></div>
-                            <div className="absolute h-full w-0.5 bg-gray-400"></div>
-                        </div>
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dashed border-gray-400"
-                             style={{ width: '115.2px', height: '115.2px' }}></div>
-                    </div>
-                    Game Content Area
+                <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-xl font-bold flex-grow relative overflow-hidden">
+                    {/* Camera preview using react-webcam */}
+                    <Webcam
+                        audio={false}
+                        screenshotFormat="image/jpeg"
+                        className="rounded-lg w-full h-full object-cover"
+                        videoConstraints={{ facingMode: "environment" }}
+                    />
                 </div>
 
                 <button
