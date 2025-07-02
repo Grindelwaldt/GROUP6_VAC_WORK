@@ -12,6 +12,7 @@ function getDetector() {
 
 // imageData must be a Canvas ImageData object
 export function getNumFromImage(imageData) {
+    console.log("Attempting to detect markers in the image data...");
     const detector = getDetector();
     if (!detector) {
         console.error('AR.Detector not loaded. Make sure aruco.js is loaded as a script.');
@@ -23,8 +24,10 @@ export function getNumFromImage(imageData) {
         for (let marker of markers) {
             numbers.push(marker.id);
         }
+        console.log("Markers detected");
         return numbers; // Return the detected marker IDs as an array
     } else {
+        console.log("No markers detected in the image data.");
         return null; // No markers detected
     }
 }
