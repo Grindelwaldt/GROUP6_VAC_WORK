@@ -212,7 +212,7 @@ export default function Home() {
     const [loginUsernameInput, setLoginUsernameInput] = useState(''); // User's input for username
     const [loginMessage, setLoginMessage] = useState(''); // Feedback message for login attempts
     const [loggedInUsername, setLoggedInUsername] = useState(''); // Stores the successfully logged-in username
-    const [currentPage, setCurrentPage] = useState('gameFeed'); // Controls which part of the UI is shown
+    const [currentPage, setCurrentPage] = useState('login'); // Controls which part of the UI is shown
 
     // Lobby and Game related states
     const [showAboutModal, setShowAboutModal] = useState(false);
@@ -269,7 +269,7 @@ export default function Home() {
     // socket = io("http://192.168.0.5:4000", {
     //   transports: ['websocket']
     // });
-    socket = io("http://192.168.46.56:4000");
+    socket = io("https://group6-vac-work-backend.onrender.com");
     // socket = io("http://192.168.46.69:4000", {  withCredentials: true, transports: ["websocket"], });
 
     socket.on("connect", () => {
