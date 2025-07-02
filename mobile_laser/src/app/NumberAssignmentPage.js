@@ -7,7 +7,10 @@ const NumberAssignmentPage = ({
     handleLeaveLobby,
     handleScanId, // function to send the scanned id to the backend and continue
     numberAssignmentMessage,
-    setCurrentPage
+    setCurrentPage,
+    setNumberInput,
+    numberInput,
+    handleSubmitNumber,
 }) => {
     const webcamRef = useRef(null);
     const [scannedId, setScannedId] = useState('');
@@ -118,6 +121,8 @@ const NumberAssignmentPage = ({
                     // const id = await handleScanId(markerIds[0]);
                     console.log('Scanned ID:', markerIds);
                     setScannedId(markerIds[0]);
+                    setNumberInput(markerIds[0]);
+                    handleSubmitNumber();
                 } catch (err) {
                     setScanError('Failed to scan ID. Please try again.');
                 }
