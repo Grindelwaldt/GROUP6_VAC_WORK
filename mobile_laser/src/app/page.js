@@ -424,6 +424,7 @@ export default function Home() {
         setWinningTeam({name: "Team " + data.winning_team, number: data.winning_team})
         lobby_id = -1;
         curr_team = -1;
+        curr_points = 0;
         setShowWaiting(false);
         setHasSelectedTeam(false);
         setCurrentPage('gameEnd');
