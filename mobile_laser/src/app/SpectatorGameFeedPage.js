@@ -41,42 +41,12 @@ const SpectatorGameFeedPage = ({
 
                 <div className="fixed top-4 right-4 z-50">
                     <button
-                        onClick={() => setShowLobbyDropdown(!showLobbyDropdown)}
+                        onClick={() => setCurrentPage('spectatorLobby')}
                         className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300 flex items-center gap-2"
-                        title="Switch Lobby"
+                        title="Back to Lobby Selection"
                     >
-                        Switch Lobby
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
+                        Back to Lobby Selection
                     </button>
-                    {showLobbyDropdown && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 max-h-60 overflow-y-auto custom-scrollbar">
-                            {availableLobbies.length === 0 ? (
-                                <p className="text-gray-500 px-4 py-2">No active lobbies</p>
-                            ) : (
-                                availableLobbies.map(lobby => (
-                                    <a
-                                        key={lobby.id}
-                                        href="#"
-                                        onClick={() => handleSelectLobbyToSpectate(lobby.id, lobby.lobbyName)}
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    >
-                                        {lobby.lobbyName}
-                                    </a>
-                                ))
-                            )}
-                            <div className="border-t border-gray-200 mt-1 pt-1">
-                                <a
-                                    href="#"
-                                    onClick={() => { setCurrentPage('spectatorLobby'); setShowLobbyDropdown(false); }}
-                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold"
-                                >
-                                    Back to Lobbies
-                                </a>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
 

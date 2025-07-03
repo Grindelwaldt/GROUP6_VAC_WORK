@@ -202,6 +202,7 @@ import SpectatorLobbyPage from './SpectatorLobbyPage.js';
 import LobbySelectionForSpectatorPage from './LobbySelectionForSpectatorPage.js';
 import PlayerGameFeedPage from './PlayerGameFeedPage.js';
 import SpectatorGameFeedPage from './SpectatorGameFeedPage.js';
+import GameEndPage from "./GameEndPage.js";
 
 // Import utilities with .js extension
 import { weaponsData, getTeamColorClass } from '@/utils/gameData.js';
@@ -266,6 +267,8 @@ export default function Home() {
     const [numberAssignmentMessage, setNumberAssignmentMessage] = useState('');
     const [playerName, setPlayerName] = useState('');
     const [showWaiting, setShowWaiting] = useState(false);
+    const [winningTeam, setWinningTeam] = useState([]);
+    const [playerTeam, setPlayerTeam] = useState(0);
     //socket handler
     useEffect(() => {
     // socket = io("https://group6-vac-work-backend.onrender.com");
@@ -415,6 +418,15 @@ export default function Home() {
       setPlayerPoints(curr_points);  
     });
 
+    socket.on("Game-Finished", (data) => {
+      if (lobby_id === data.id) {
+        setPlayerTeam(curr_team)
+        setWinningTeam({name: "Team " + data.winning_team, number: data.winning_team})
+        setCurrentPage('gameEnd');
+      }
+      
+    });
+
     return () => {
       socket.disconnect();
     };
@@ -499,6 +511,7 @@ export default function Home() {
         setLoginMessage("Attempting to log in")
         // setCurrentPage('lobby');
     };
+
 
     const handleTeamSelect = async (teamName) => {
         // await updateTeamSelection(db, currentLobbyId, userId, usernameInput, teamName);
@@ -978,7 +991,11 @@ export default function Home() {
         handleReloadExternal,
         showWaiting, 
         setShowWaiting,
-        handleGetLobbyInfo
+        handleGetLobbyInfo,
+        winningTeam,
+        setWinningTeam,
+        playerTeam,
+        setPlayerTeam,
     };
     // Login page specific states
 
@@ -1041,6 +1058,8 @@ export default function Home() {
             return <LobbySelectionForSpectatorPage {...commonProps} />;
         case 'gameFeed':
             return isPlayer ? <PlayerGameFeedPage {...commonProps} /> : <SpectatorGameFeedPage {...commonProps} />;
+        case 'gameEnd':
+            return <GameEndPage {...commonProps} />;
         default:
             return <LoginPage {...commonProps} />;
     }
