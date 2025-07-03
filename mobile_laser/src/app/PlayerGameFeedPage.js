@@ -312,7 +312,7 @@ const PlayerGameFeedPage = ({
 
     // Enhanced handleWeaponAction to play shoot sound
     const handleShoot = () => {
-        if (!isPlayerDead && equippedWeapon && (equippedWeapon.ammoCapacity === Infinity || equippedWeapon.currentAmmo > 0) && !isReloading) {
+        if (equippedWeapon && (equippedWeapon.ammoCapacity === Infinity || equippedWeapon.currentAmmo > 0) && !isReloading) {
             handleShootExternal();
             /// start
             if (webcamRef.current) {
@@ -487,9 +487,9 @@ const PlayerGameFeedPage = ({
 
                 <button
                     onClick={handleShoot}
-                    disabled={(equippedWeapon.ammoCapacity !== Infinity && equippedWeapon.currentAmmo <= 0) || isReloading}
+                    disabled={!equippedWeapon || (equippedWeapon.ammoCapacity !== Infinity && equippedWeapon.currentAmmo <= 0) || isReloading}
                     className={`fixed right-2 top-1/2 -translate-y-1/2 rounded-full w-20 h-20 flex items-center justify-center shadow-xl transition duration-300 ease-in-out hover:scale-110 focus:outline-none focus:ring-4
-                        ${(equippedWeapon.ammoCapacity !== Infinity && equippedWeapon.currentAmmo <= 0) || isReloading ? 'bg-gray-500 text-gray-300 cursor-not-allowed' : `${teamColors.bg} ${teamColors.hoverBg} text-white ${teamColors.focusRing}`} z-50`}
+                        ${!equippedWeapon || (equippedWeapon.ammoCapacity !== Infinity && equippedWeapon.currentAmmo <= 0) || isReloading ? 'bg-gray-500 text-gray-300 cursor-not-allowed' : `${teamColors.bg} ${teamColors.hoverBg} text-white ${teamColors.focusRing}`} z-50`}
                     style={{ fontSize: '1rem', fontFamily: 'Montserrat, Arial, sans-serif', right: 8, left: 'auto' }}
                 >
                     <span className="font-bold">
