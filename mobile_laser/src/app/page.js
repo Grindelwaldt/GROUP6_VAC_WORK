@@ -422,6 +422,10 @@ export default function Home() {
       if (lobby_id === data.id) {
         setPlayerTeam(curr_team)
         setWinningTeam({name: "Team " + data.winning_team, number: data.winning_team})
+        lobby_id = -1;
+        curr_team = -1;
+        setShowWaiting(false);
+        setHasSelectedTeam(false);
         setCurrentPage('gameEnd');
       }
       
