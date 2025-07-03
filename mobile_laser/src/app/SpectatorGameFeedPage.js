@@ -20,7 +20,7 @@ const SpectatorGameFeedPage = ({
         <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 to-black flex">
             <div className="flex-grow flex flex-col items-center justify-center p-4 relative">
                 <h1 className="text-4xl font-extrabold text-gray-800 mb-4">Live Game Feed (Spectator)</h1>
-                {currentLobbyName && (
+                {/* {currentLobbyName && (
                     <p className="text-xl font-bold text-purple-400 mb-4">
                         Currently viewing lobby: {currentLobbyName}
                     </p>
@@ -31,6 +31,35 @@ const SpectatorGameFeedPage = ({
                     ) : (
                         <p>Select a player from the sidebar to view their live feed.</p>
                     )}
+                </div> */}
+
+                {/* Team blocks displayed equally */}
+                <div className="w-full flex flex-row gap-6 justify-center items-stretch mb-8">
+                  {teams && teams.length > 0 ? (
+                    teams.map(team => (
+                      <div key={team.id} className="flex-1 bg-blue-50 p-6 rounded-lg shadow-lg flex flex-col items-center min-w-[200px]">
+                        <div className="flex flex-col items-center mb-2">
+                          <span className="font-bold text-blue-800 text-2xl mb-1">{team.name}</span>
+                          <span className="font-extrabold text-blue-800 text-3xl">{team.score}</span>
+                        </div>
+                        <h4 className="text-base font-medium text-gray-600 mb-2">Players:</h4>
+                        <ul className="space-y-1 w-full">
+                          {team.players.map(player => (
+                            <li
+                              key={player.id}
+                              className={`flex justify-between text-base text-gray-700 cursor-pointer hover:text-blue-600 transition duration-150 ease-in-out ${watchingPlayerId === player.id ? 'font-bold text-blue-700' : ''}`}
+                              onClick={() => handleWatchPlayer(player.id, player.name)}
+                            >
+                              <span>{player.name}</span>
+                              <span>{player.score}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 text-xl font-bold w-full text-center">No teams to display.</p>
+                  )}
                 </div>
 
                 {showDeathMessage && (
