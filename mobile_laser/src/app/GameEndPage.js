@@ -27,7 +27,7 @@ const GameEndPage = ({ winningTeam, playerTeam, setCurrentPage }) => {
         {/* Action Button */}
         <div className="p-8 bg-gray-900 flex justify-center">
           <button
-            onClick={setCurrentPage('lobby')}
+            onClick={() => setCurrentPage('lobby')}
             className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50"
           >
             Return to Lobby
