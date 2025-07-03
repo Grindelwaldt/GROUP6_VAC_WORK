@@ -35,8 +35,8 @@ const SpectatorGameFeedPage = ({
 
                 {/* Team blocks displayed equally */}
                 <div className="w-full flex flex-row gap-6 justify-center items-stretch mb-8">
-                  {teams && teams.length > 0 ? (
-                    teams.map(team => (
+                  {spectTeams && spectTeams.length > 0 ? (
+                    spectTeams.map(team => (
                       <div key={team.id} className="flex-1 bg-blue-50 p-6 rounded-lg shadow-lg flex flex-col items-center min-w-[200px]">
                         <div className="flex flex-col items-center mb-2">
                           <span className="font-bold text-blue-800 text-2xl mb-1">{team.name}</span>
