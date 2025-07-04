@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Setup
+
+Please ensure that the backend is pointing to this servers ip address at port 3000. Moreover, change the ip address on line 278 of page.js (under src/app) to the ip address if the server (which if hosted locally is your devices ip address at port 4000).
+
 ## Getting Started
 
 First, run the development server:
